@@ -7,124 +7,99 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
 <style>
 :root {
-  --bg: #0b0d12;
-  --card: #141824;
-  --text: #eef0f6;
-  --muted: #8b91a5;
-  --accent: #7c8cf8;
-  --border: #222839;
+  --bg: #ffffff;
+  --ink: #000000;
+  --gray: #767676;
+  --border: #000000;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { height: 100%; }
 body {
-  background: var(--bg); color: var(--text);
+  background: var(--bg); color: var(--ink);
   font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   display: flex; flex-direction: column;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 .hero {
-  padding: 72px 24px 40px;
+  padding: 76px 24px 44px;
   text-align: center;
 }
 .hero h1 {
-  font-size: clamp(44px, 8vw, 76px);
-  font-weight: 800;
-  letter-spacing: 6px;
-  background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 28px;
+  font-size: clamp(46px, 8vw, 80px);
+  font-weight: 900;
+  letter-spacing: 8px;
+  margin-bottom: 34px;
   user-select: none;
 }
 .search-row {
   max-width: 720px;
   margin: 0 auto;
   display: flex;
-  gap: 12px;
-  align-items: center;
+  gap: 0;
+  align-items: stretch;
+  border: 2px solid var(--border);
 }
 #random-btn {
   flex-shrink: 0;
-  width: 52px; height: 52px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--card);
-  color: var(--text);
-  font-size: 22px;
+  width: 58px;
+  border: none;
+  border-right: 2px solid var(--border);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 24px;
   cursor: pointer;
-  transition: transform .2s, border-color .2s, box-shadow .2s;
-  line-height: 1;
+  transition: background .12s, color .12s;
 }
-#random-btn:hover {
-  border-color: var(--accent);
-  transform: rotate(15deg) scale(1.05);
-  box-shadow: 0 0 24px rgba(124,140,248,.25);
-}
+#random-btn:hover { background: var(--ink); }
 #search {
   flex: 1;
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 26px;
-  padding: 15px 26px;
-  font-size: 17px;
+  border: none;
+  background: var(--bg);
+  color: var(--ink);
+  padding: 16px 24px;
+  font-size: 18px;
   outline: none;
-  transition: border-color .2s, box-shadow .2s;
+  font-family: inherit;
 }
-#search:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(124,140,248,.12);
-}
-#search::placeholder { color: var(--muted); }
-.cat-tabs {
-  max-width: 720px; margin: 18px auto 0;
-  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
-}
-.cat-btn {
-  background: transparent; color: var(--muted);
-  border: 1px solid var(--border); border-radius: 20px;
-  padding: 7px 18px; font-size: 13px; cursor: pointer;
-  transition: all .15s;
-}
-.cat-btn:hover { color: var(--text); border-color: var(--accent); }
-.cat-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 60px; width: 100%; }
-.stats { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+#search::placeholder { color: var(--gray); }
+main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 64px; width: 100%; }
+.stats { font-size: 14px; font-weight: 700; margin-bottom: 18px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
 .grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 18px;
+  gap: 4px;
 }
 .card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 14px; overflow: hidden; cursor: pointer;
-  transition: transform .18s, border-color .18s;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: background .12s;
 }
-.card:hover { transform: translateY(-4px); border-color: var(--accent); }
+.card:hover { background: var(--ink); }
 .card img {
   width: 100%; display: block; background: #000;
 }
 .empty {
-  color: var(--muted); text-align: center;
-  padding: 80px 0; font-size: 15px;
+  color: var(--gray); text-align: center;
+  padding: 80px 0; font-size: 16px;
 }
 #lightbox {
-  position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 100;
+  position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 100;
   display: none; align-items: center; justify-content: center; flex-direction: column;
   padding: 30px;
 }
 #lightbox.open { display: flex; }
 #lightbox img {
   max-width: min(94vw, 1100px); max-height: 80vh;
-  width: auto; height: auto; border-radius: 8px; background: #000;
+  width: auto; height: auto; border: 2px solid var(--bg); background: #000;
 }
-#lightbox .lb-name { margin-top: 14px; font-size: 14px; color: var(--text); text-align: center; max-width: 800px; }
-#lightbox .lb-hint { margin-top: 8px; font-size: 12px; color: var(--muted); }
+#lightbox .lb-name { margin-top: 16px; font-size: 15px; color: #fff; text-align: center; max-width: 800px; }
+#lightbox .lb-hint { margin-top: 8px; font-size: 12px; color: #9aa; }
 #lb-close {
   position: absolute; top: 18px; right: 24px; font-size: 32px; color: #fff;
   cursor: pointer; background: none; border: none; line-height: 1;
 }
-#lb-close:hover { color: var(--accent); }
+#lb-close:hover { color: #000; background: #fff; }
 </style>
 </head>
 <body>
@@ -133,13 +108,6 @@ main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 60px; widt
   <div class="search-row">
     <button id="random-btn" title="随机来一张">🎲</button>
     <input id="search" type="text" placeholder="搜索关键词，如：模型 / 未来 / 谢谢 / 下个月..." autocomplete="off">
-  </div>
-  <div class="cat-tabs">
-    <button class="cat-btn active" data-cat="all">全部</button>
-    <button class="cat-btn" data-cat="斗图">斗图</button>
-    <button class="cat-btn" data-cat="嘉豪">嘉豪</button>
-    <button class="cat-btn" data-cat="工作">工作</button>
-    <button class="cat-btn" data-cat="无意义">无意义</button>
   </div>
 </div>
 <main>
@@ -158,7 +126,7 @@ const SYMBOL_MAP = {'：':':','；':';','，':',','。':'.','！':'!','？':'?',
 const norm = s => Array.from(s).map(c => SYMBOL_MAP[c] || c).join('').toLowerCase();
 
 let ALL = [];
-let state = { cat: 'all', q: '' };
+let state = { q: '' };
 
 const $ = id => document.getElementById(id);
 
@@ -175,23 +143,12 @@ $('search').addEventListener('input', e => {
   state.q = e.target.value.trim();
   render();
 });
-document.querySelectorAll('.cat-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.cat = btn.dataset.cat;
-    if (state.q) render();
-  });
-});
 $('random-btn').addEventListener('click', rollRandom);
 
 function filtered() {
   const q = norm(state.q);
-  return ALL.filter(item => {
-    if (state.cat !== 'all' && item.cat !== state.cat) return false;
-    if (!q) return true;
-    return norm(item.norm).includes(q) || norm(item.name).includes(q);
-  });
+  if (!q) return [];
+  return ALL.filter(item => norm(item.norm).includes(q) || norm(item.name).includes(q));
 }
 
 function render() {
@@ -224,9 +181,8 @@ function render() {
 }
 
 function rollRandom() {
-  const list = state.q ? filtered() : (state.cat === 'all' ? ALL : ALL.filter(i => i.cat === state.cat));
-  if (!list.length) return;
-  const item = list[Math.floor(Math.random() * list.length)];
+  if (!ALL.length) return;
+  const item = ALL[Math.floor(Math.random() * ALL.length)];
   openLightbox(item);
 }
 
