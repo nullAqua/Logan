@@ -11,6 +11,7 @@
   --ink: #000000;
   --gray: #767676;
   --border: #000000;
+  --red: #ff0000;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { height: 100%; }
@@ -20,7 +21,9 @@ body {
   display: flex; flex-direction: column;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  transition: opacity .35s ease;
 }
+body.faded { opacity: 0; }
 .hero {
   padding: 76px 24px 44px;
   text-align: center;
@@ -63,6 +66,34 @@ body {
   font-family: inherit;
 }
 #search::placeholder { color: var(--gray); }
+#jiahao-btn {
+  display: none;
+  margin: 26px auto 0;
+  background: var(--ink);
+  color: #fff;
+  border: 2px solid var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  padding: 13px 36px;
+  cursor: pointer;
+  font-family: inherit;
+  position: relative;
+  overflow: hidden;
+  transition: transform .12s, box-shadow .12s;
+}
+#jiahao-btn:hover {
+  box-shadow: 0 0 18px rgba(0,0,0,.85);
+  transform: scale(1.03);
+}
+#jiahao-btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  animation: shine 2.4s infinite;
+}
+@keyframes shine { 60%, 100% { transform: translateX(120%); } }
 main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 64px; width: 100%; }
 .stats { font-size: 14px; font-weight: 700; margin-bottom: 18px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
 .grid {
@@ -78,6 +109,32 @@ main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 64px; widt
 .card:hover { background: var(--ink); }
 .card img {
   width: 100%; display: block; background: #000;
+}
+.card.egg {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  align-items: stretch;
+}
+.card.egg .egg-mark {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px;
+  border-right: 2px solid var(--border);
+  background: var(--bg);
+  transition: background .12s;
+}
+.card.egg:hover .egg-mark { background: var(--ink); }
+.card.egg .egg-mark .e1 { font-size: 20px; line-height: 1.1; }
+.card.egg .egg-mark .e2 { font-size: 20px; line-height: 1.1; }
+.card.egg .egg-mark .xi {
+  font-size: 24px; font-weight: 900; line-height: 1.1;
+  color: var(--red);
+  animation: xiBlink .5s steps(2, start) infinite;
+}
+@keyframes xiBlink { to { visibility: hidden; } }
+.card.egg img {
+  width: 100%; height: 100%;
+  object-fit: contain; background: #000;
 }
 .empty {
   color: var(--gray); text-align: center;
@@ -100,6 +157,40 @@ main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 64px; widt
   cursor: pointer; background: none; border: none; line-height: 1;
 }
 #lb-close:hover { color: #000; background: #fff; }
+#stage {
+  position: fixed; inset: 0; z-index: 200;
+  display: none;
+}
+#stage.on { display: block; }
+#stage canvas.rain {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+#stage #egg-img-wrap {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.2);
+  opacity: 0; transition: opacity .3s;
+}
+#stage #egg-img-wrap.show { opacity: 1; }
+#stage #egg-img {
+  max-width: min(80vw, 900px); max-height: 80vh;
+  border: 3px solid #fff;
+  cursor: pointer;
+  box-shadow: 0 0 60px rgba(255,255,255,.35);
+  background: #000;
+}
+#stage canvas.confetti {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+#stage .stage-tip {
+  position: absolute; bottom: 34px; left: 0; right: 0;
+  text-align: center; color: #fff; font-size: 13px;
+  opacity: 0; transition: opacity .3s; pointer-events: none;
+}
+#stage .stage-tip.show { opacity: 1; }
 </style>
 </head>
 <body>
@@ -109,6 +200,7 @@ main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 64px; widt
     <button id="random-btn" title="随机来一张">🎲</button>
     <input id="search" type="text" placeholder="搜索关键词，如：模型 / 未来 / 谢谢 / 下个月..." autocomplete="off">
   </div>
+  <button id="jiahao-btn">随 机 嘉 豪 语 录</button>
 </div>
 <main>
   <div class="stats" id="stats" style="display:none"></div>
@@ -120,6 +212,14 @@ main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 64px; widt
   <img id="lb-img" src="" alt="">
   <div class="lb-name" id="lb-name"></div>
   <div class="lb-hint">点击任意处或按 Esc 关闭</div>
+</div>
+<div id="stage">
+  <canvas class="rain"></canvas>
+  <div id="egg-img-wrap">
+    <img id="egg-img" src="" alt="">
+  </div>
+  <canvas class="confetti"></canvas>
+  <div class="stage-tip" id="stage-tip">点 击 图 片 关 闭</div>
 </div>
 <script>
 const SYMBOL_MAP = {'：':':','；':';','，':',','。':'.','！':'!','？':'?','（':'(','）':')','“':'"','”':'"','‘':"'",'’':"'",'【':'[','】':']','、':' '};
@@ -148,7 +248,10 @@ $('random-btn').addEventListener('click', rollRandom);
 function filtered() {
   const q = norm(state.q);
   if (!q) return [];
-  return ALL.filter(item => norm(item.norm).includes(q) || norm(item.name).includes(q));
+  return ALL.filter(item => {
+    const text = norm(item.norm) + ' ' + norm(item.kw || '') + (item.egg ? '囍' : '');
+    return text.includes(q) || norm(item.name).includes(q);
+  });
 }
 
 function render() {
@@ -169,7 +272,13 @@ function render() {
   grid.innerHTML = '';
   list.forEach(item => {
     const card = document.createElement('div');
-    card.className = 'card';
+    card.className = 'card' + (item.egg ? ' egg' : '');
+    if (item.egg) {
+      const mark = document.createElement('div');
+      mark.className = 'egg-mark';
+      mark.innerHTML = '<span class="e1">🤣</span><span class="e2">👉</span><span class="xi">囍</span>';
+      card.appendChild(mark);
+    }
     const img = document.createElement('img');
     img.loading = 'lazy';
     img.src = item.path;
@@ -196,6 +305,118 @@ function closeLightbox() { lb.classList.remove('open'); }
 lb.addEventListener('click', closeLightbox);
 $('lb-img').addEventListener('click', e => e.stopPropagation());
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+/* ---------- 随机嘉豪语录彩蛋按钮 ---------- */
+(function () {
+  const btn = $('jiahao-btn');
+  const now = new Date();
+  const lo = new Date(2026, 7, 2);
+  const hi = new Date(2026, 7, 15, 23, 59, 59);
+  if (now >= lo && now <= hi) btn.style.display = 'inline-block';
+
+  const stage = $('stage');
+  const rainCv = stage.querySelector('canvas.rain');
+  const confCv = stage.querySelector('canvas.confetti');
+  const wrap = $('egg-img-wrap');
+  const eggImg = $('egg-img');
+  const tip = $('stage-tip');
+  const RAIN_CHARS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEFXYZ#$%&@+=<>';
+
+  btn.addEventListener('click', () => {
+    const pool = ALL.filter(i => i.cat === '嘉豪');
+    if (!pool.length) return;
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    document.body.classList.add('faded');
+    setTimeout(() => {
+      stage.classList.add('on');
+      startRain(() => {
+        rainCv.style.display = 'none';
+        eggImg.src = pick.path;
+        wrap.classList.add('show');
+        tip.classList.add('show');
+        confettiBurst();
+      });
+    }, 400);
+  });
+
+  function startRain(done) {
+    const ctx = rainCv.getContext('2d');
+    const w = rainCv.width = innerWidth;
+    const h = rainCv.height = innerHeight;
+    const fs = 16;
+    const cols = Math.floor(w / fs);
+    const drops = Array.from({ length: cols }, () => Math.random() * -h / fs);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, w, h);
+    const DUR = 1300;
+    const start = performance.now();
+    function frame(now) {
+      ctx.fillStyle = 'rgba(0,0,0,0.09)';
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = '#00ff41';
+      ctx.font = fs + 'px monospace';
+      for (let i = 0; i < cols; i++) {
+        ctx.fillText(RAIN_CHARS[Math.floor(Math.random() * RAIN_CHARS.length)], i * fs, drops[i] * fs);
+        if (drops[i] * fs > h && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+      if (now - start < DUR) requestAnimationFrame(frame);
+      else done();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function confettiBurst() {
+    const ctx = confCv.getContext('2d');
+    const w = confCv.width = innerWidth;
+    const h = confCv.height = innerHeight;
+    const colors = ['#ff3b3b', '#ffd23b', '#3bd6ff', '#ff6bd6', '#7dff5e', '#ff9b3b'];
+    const parts = [];
+    const cx = w / 2, cy = h * 0.42;
+    for (let i = 0; i < 160; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      const sp = 5 + Math.random() * 10;
+      parts.push({
+        x: cx, y: cy,
+        vx: Math.cos(ang) * sp,
+        vy: Math.sin(ang) * sp - 4,
+        rot: Math.random() * Math.PI,
+        vr: (Math.random() - 0.5) * 0.35,
+        size: 4 + Math.random() * 6,
+        c: colors[i % colors.length]
+      });
+    }
+    const DUR = 1600;
+    const start = performance.now();
+    function frame(now) {
+      ctx.clearRect(0, 0, w, h);
+      const t = now - start;
+      for (const p of parts) {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.16; p.rot += p.vr;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.c;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+        ctx.restore();
+      }
+      if (t < DUR) requestAnimationFrame(frame);
+      else ctx.clearRect(0, 0, w, h);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  wrap.addEventListener('click', () => {
+    wrap.classList.remove('show');
+    tip.classList.remove('show');
+    setTimeout(() => {
+      stage.classList.remove('on');
+      rainCv.style.display = '';
+      eggImg.src = '';
+      document.body.classList.remove('faded');
+    }, 320);
+  });
+})();
 </script>
 </body>
 </html>

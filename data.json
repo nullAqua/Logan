@@ -357,6 +357,15 @@
   "norm": "Huge congrats!!"
  },
  {
+  "name": "Tibo&Logan",
+  "cat": "斗图",
+  "file": "Tibo&Logan.png",
+  "path": "斗图/Tibo&Logan.png",
+  "norm": "Tibo&Logan",
+  "egg": true,
+  "kw": "抱歉 别道歉"
+ },
+ {
   "name": "correct",
   "cat": "斗图",
   "file": "correct.png",
