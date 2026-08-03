@@ -12,18 +12,35 @@
   --gray: #767676;
   --border: #000000;
   --red: #ff0000;
+  --card-hover: #000000;
+  --shine-dim: rgba(255,255,255,.28);
+  --shine-bright: rgba(255,255,255,.62);
+  --lb-bg: rgba(0,0,0,.92);
+}
+html.dark {
+  --bg: #0c0c0c;
+  --ink: #eaeaea;
+  --gray: #8f8f8f;
+  --border: #2f2f2f;
+  --card-hover: #1c1c1c;
+  --shine-dim: rgba(0,0,0,.22);
+  --shine-bright: rgba(0,0,0,.5);
+  --lb-bg: rgba(8,8,8,.95);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { height: 100%; }
 body {
   background: var(--bg); color: var(--ink);
   font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
-  display: flex; flex-direction: column;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  transition: opacity .35s ease;
 }
-body.faded { opacity: 0; }
+#page {
+  display: flex; flex-direction: column;
+  min-height: 100vh;
+  transition: opacity .3s ease;
+}
+#page.faded { opacity: 0; }
 .hero {
   padding: 76px 24px 44px;
   text-align: center;
@@ -70,7 +87,7 @@ body.faded { opacity: 0; }
   display: none;
   margin: 26px auto 0;
   background: var(--ink);
-  color: #fff;
+  color: var(--bg);
   border: 2px solid var(--ink);
   font-size: 15px;
   font-weight: 700;
@@ -83,30 +100,55 @@ body.faded { opacity: 0; }
   transition: transform .12s, box-shadow .12s;
 }
 #jiahao-btn:hover {
-  box-shadow: 0 0 18px rgba(0,0,0,.85);
+  box-shadow: 0 0 18px rgba(128,128,128,.85);
   transform: scale(1.03);
 }
+#jiahao-btn .lbl {
+  position: relative; z-index: 1;
+}
+#jiahao-btn::before,
 #jiahao-btn::after {
   content: '';
   position: absolute; inset: 0;
-  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
-  transform: translateX(-120%);
-  animation: shine 2.4s infinite;
+  background-repeat: repeat-x;
+  will-change: background-position;
 }
-@keyframes shine { 60%, 100% { transform: translateX(120%); } }
+#jiahao-btn::before {
+  background-image: linear-gradient(100deg,
+    transparent 40%, var(--shine-dim) 50%, transparent 60%);
+  background-size: 44px 100%;
+  animation: tunnelA 9s linear infinite;
+}
+#jiahao-btn::after {
+  background-image: linear-gradient(100deg,
+    transparent 40%, var(--shine-bright) 50%, transparent 60%);
+  background-size: 88px 100%;
+  animation: tunnelB 7s linear infinite;
+  animation-delay: -2.4s;
+}
+@keyframes tunnelA {
+  from { background-position: 0 0; }
+  to { background-position: 44px 0; }
+}
+@keyframes tunnelB {
+  from { background-position: 0 0; }
+  to { background-position: 88px 0; }
+}
 main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 64px; width: 100%; }
 .stats { font-size: 14px; font-weight: 700; margin-bottom: 18px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
 .grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 4px;
+  column-gap: 4px;
 }
 .card {
+  break-inside: avoid;
+  margin-bottom: 4px;
+  width: 100%;
   background: var(--bg);
   border: 2px solid var(--border);
   cursor: pointer;
   transition: background .12s;
 }
-.card:hover { background: var(--ink); }
+.card:hover { background: var(--card-hover); }
 .card img {
   width: 100%; display: block; background: #000;
 }
@@ -133,22 +175,24 @@ main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 64px; widt
 }
 @keyframes xiBlink { to { visibility: hidden; } }
 .card.egg img {
-  width: 100%; height: 100%;
+  width: 100%; height: auto;
   object-fit: contain; background: #000;
+  min-height: 140px;
 }
 .empty {
   color: var(--gray); text-align: center;
   padding: 80px 0; font-size: 16px;
 }
 #lightbox {
-  position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 100;
+  position: fixed; inset: 0; background: var(--lb-bg); z-index: 100;
   display: none; align-items: center; justify-content: center; flex-direction: column;
   padding: 30px;
 }
 #lightbox.open { display: flex; }
 #lightbox img {
-  max-width: min(94vw, 1100px); max-height: 80vh;
-  width: auto; height: auto; border: 2px solid var(--bg); background: #000;
+  max-width: 78vw; max-height: 72vh;
+  width: auto; height: auto;
+  border: 2px solid var(--bg); background: #000;
 }
 #lightbox .lb-name { margin-top: 16px; font-size: 15px; color: #fff; text-align: center; max-width: 800px; }
 #lightbox .lb-hint { margin-top: 8px; font-size: 12px; color: #9aa; }
@@ -160,6 +204,7 @@ main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 64px; widt
 #stage {
   position: fixed; inset: 0; z-index: 200;
   display: none;
+  background: #000;
 }
 #stage.on { display: block; }
 #stage canvas.rain {
@@ -174,7 +219,8 @@ main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 64px; widt
 }
 #stage #egg-img-wrap.show { opacity: 1; }
 #stage #egg-img {
-  max-width: min(80vw, 900px); max-height: 80vh;
+  max-width: 74vw; max-height: 68vh;
+  width: auto; height: auto;
   border: 3px solid #fff;
   cursor: pointer;
   box-shadow: 0 0 60px rgba(255,255,255,.35);
@@ -194,24 +240,26 @@ main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 64px; widt
 </style>
 </head>
 <body>
+<div id="page">
 <div class="hero">
   <h1>这就是Logan</h1>
   <div class="search-row">
     <button id="random-btn" title="随机来一张">🎲</button>
     <input id="search" type="text" placeholder="搜索关键词，如：模型 / 未来 / 谢谢 / 下个月..." autocomplete="off">
   </div>
-  <button id="jiahao-btn">随 机 嘉 豪 语 录</button>
+  <button id="jiahao-btn"><span class="lbl">随 机 嘉 豪 语 录</span></button>
 </div>
 <main>
   <div class="stats" id="stats" style="display:none"></div>
   <div class="grid" id="grid" style="display:none"></div>
   <div class="empty" id="empty"></div>
 </main>
+</div>
 <div id="lightbox">
   <button id="lb-close">×</button>
   <img id="lb-img" src="" alt="">
   <div class="lb-name" id="lb-name"></div>
-  <div class="lb-hint">点击任意处或按 Esc 关闭</div>
+  <div class="lb-hint">右键或长按保存/复制图片 · 点击任意处或按 Esc 关闭</div>
 </div>
 <div id="stage">
   <canvas class="rain"></canvas>
@@ -219,7 +267,7 @@ main { flex: 1; max-width: 1080px; margin: 0 auto; padding: 24px 24px 64px; widt
     <img id="egg-img" src="" alt="">
   </div>
   <canvas class="confetti"></canvas>
-  <div class="stage-tip" id="stage-tip">点 击 图 片 关 闭</div>
+  <div class="stage-tip" id="stage-tip">右键或长按保存/复制图片 · 点击图片关闭</div>
 </div>
 <script>
 const SYMBOL_MAP = {'：':':','；':';','，':',','。':'.','！':'!','？':'?','（':'(','）':')','“':'"','”':'"','‘':"'",'’':"'",'【':'[','】':']','、':' '};
@@ -227,8 +275,24 @@ const norm = s => Array.from(s).map(c => SYMBOL_MAP[c] || c).join('').toLowerCas
 
 let ALL = [];
 let state = { q: '' };
+let recent = [];
+
+function pickRandom(list) {
+  if (!list.length) return null;
+  const pool = list.filter(x => !recent.includes(x.file));
+  const usable = pool.length ? pool : list;
+  const item = usable[Math.floor(Math.random() * usable.length)];
+  recent.push(item.file);
+  if (recent.length > 8) recent.shift();
+  return item;
+}
 
 const $ = id => document.getElementById(id);
+
+(function applyTheme() {
+  const h = new Date().getHours();
+  if (h >= 18 || h < 7) document.documentElement.classList.add('dark');
+})();
 
 fetch('data.json').then(r => r.json()).then(data => {
   ALL = data;
@@ -254,6 +318,13 @@ function filtered() {
   });
 }
 
+function layoutCols(count) {
+  if (count < 15) return 2;
+  if (innerWidth >= 1100) return 4;
+  if (innerWidth >= 700) return 3;
+  return 2;
+}
+
 function render() {
   if (!state.q) {
     $('grid').style.display = 'none';
@@ -263,12 +334,13 @@ function render() {
     return;
   }
   const list = filtered();
+  const grid = $('grid');
+  grid.style.columnCount = layoutCols(list.length);
   $('empty').style.display = list.length ? 'none' : 'block';
   $('empty').textContent = list.length ? '' : '没有找到匹配的内容，换个关键词试试';
-  $('grid').style.display = list.length ? 'grid' : 'none';
+  $('grid').style.display = list.length ? 'block' : 'none';
   $('stats').style.display = list.length ? 'block' : 'none';
   $('stats').textContent = `找到 ${list.length} 条`;
-  const grid = $('grid');
   grid.innerHTML = '';
   list.forEach(item => {
     const card = document.createElement('div');
@@ -290,14 +362,25 @@ function render() {
 }
 
 function rollRandom() {
-  if (!ALL.length) return;
-  const item = ALL[Math.floor(Math.random() * ALL.length)];
-  openLightbox(item);
+  const item = pickRandom(ALL);
+  if (item) openLightbox(item);
 }
 
 const lb = $('lightbox');
+function fitImg(img, maxW, maxH) {
+  img.onload = () => {
+    const nw = img.naturalWidth, nh = img.naturalHeight;
+    if (!nw || !nh) return;
+    const scale = Math.min(maxW / nw, maxH / nh);
+    img.style.width = Math.round(nw * scale) + 'px';
+    img.style.height = Math.round(nh * scale) + 'px';
+  };
+}
 function openLightbox(item) {
-  $('lb-img').src = item.path;
+  const img = $('lb-img');
+  img.style.width = ''; img.style.height = '';
+  img.src = item.path;
+  fitImg(img, innerWidth * 0.78, innerHeight * 0.72);
   $('lb-name').textContent = item.name;
   lb.classList.add('open');
 }
@@ -324,19 +407,21 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
 
   btn.addEventListener('click', () => {
     const pool = ALL.filter(i => i.cat === '嘉豪');
-    if (!pool.length) return;
-    const pick = pool[Math.floor(Math.random() * pool.length)];
-    document.body.classList.add('faded');
+    const pick = pickRandom(pool);
+    if (!pick) return;
+    $('page').classList.add('faded');
     setTimeout(() => {
       stage.classList.add('on');
       startRain(() => {
         rainCv.style.display = 'none';
+        eggImg.style.width = ''; eggImg.style.height = '';
         eggImg.src = pick.path;
+        fitImg(eggImg, innerWidth * 0.74, innerHeight * 0.68);
         wrap.classList.add('show');
         tip.classList.add('show');
         confettiBurst();
       });
-    }, 400);
+    }, 320);
   });
 
   function startRain(done) {
@@ -406,14 +491,14 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
     requestAnimationFrame(frame);
   }
 
-  wrap.addEventListener('click', () => {
+  eggImg.addEventListener('click', () => {
     wrap.classList.remove('show');
     tip.classList.remove('show');
     setTimeout(() => {
       stage.classList.remove('on');
       rainCv.style.display = '';
       eggImg.src = '';
-      document.body.classList.remove('faded');
+      $('page').classList.remove('faded');
     }, 320);
   });
 })();
